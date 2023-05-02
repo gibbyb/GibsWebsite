@@ -1,19 +1,10 @@
 .App {
+  /* Set the App container's position to relative */
+  position: relative;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
+.console-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -24,15 +15,47 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.console {
+  /* Set the console container's position to relative */
+  position: relative;
+  /* Add the background image and set the size and position */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Set the dimensions of the console container */
+  width: 800px; /* Adjust the width as needed */
+  height: 533px; /* Adjust the height as needed */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.powerline {
+  /* Set the powerline container's position to absolute */
+  position: absolute;
+  /* Adjust the top and left properties to position the powerline image correctly */
+  top: 0;
+  left: 0;
+  /* Set the dimensions of the powerline container */
+  width: 100px; /* Adjust the width as needed */
+  height: 100px; /* Adjust the height as needed */
+  /* Add the background image and set the size and position */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input {
+  /* Position the input field relative to the console container */
+  position: absolute;
+  /* Adjust the top and left properties to position the input field correctly */
+  top: 41px; /* Adjust as needed */
+  left: 108px; /* Adjust as needed */
+  /* Add other input styles as needed */
+  border: none;
+  background: transparent;
+  outline: none;
+  /* Set the font size, color, and other text styles to match the terminal appearance */
+  font-size: 16px;
+  color: #ffffff; /* Adjust the color as needed */
+  font-family: 'Courier New', monospace;
+  /* Set the width and height of the input field */
+  width: calc(100% - 100px); /* Adjust the width as needed */
 }
