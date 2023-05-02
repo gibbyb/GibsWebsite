@@ -2,30 +2,69 @@
 
 *hosted by [GibbyB](https://gibbyb.com)*
 
-# The information below is mostly for myself
+# Developing for this Project:
 
-To develop this app, you will first need to clone the repository, download your db.js file from your server, and install all the necessary modules by running the command: `npm install` from the directory "app" as well as from the directory "client".
+1. Clone the repository
 
-Install pm2 with the command `npm install pm2 -g` if necessary.
-After this, the project should be good to start up by using  `pm2 start index.js` and `pm2 start db.js` for both the index.js file (express) and another for the db.js file (mysql2). You can stop any service with `pm2 stop index` as well. `pm2 list` is also a helpful command. To ensure that PM2 automatically starts your Node.js application when the server is restarted, you can use the following command to generate a startup script: `pm2 startup`
+2. Add db.js in the root directory & fill in relevant database information. Here is a template of the file with the credentials removed:
 
-You can install live-server, an extremely helpful tool, with the command `npm install -g live-server`
+```Javascript
+const mysql = require('mysql2/promise');
+async function connectToDb() {
+  try {
+    const connection = await mysql.createConnection({
+      host: '',
+      user: '',
+      password: '',
+      database: '',
+    });
+    return connection;
+  } catch (err) {
+    console.error('Error connecting to the database:', err.stack);
+    return null;
+  }
+}
+module.exports = connectToDb;
+```
 
-Once you know that both are up and running, it is time to start the development server. You can do this by running `npm start` and if you get any errors, consider running `npm install react-scripts` or deleting the modules and rerunning `npm install` then try `npm start`
+3. Install pm2 globally in order to run index.js in the background.
 
-Lastly, `npm run build` will build all the new changes into the build directory, which can be used once you feel you are at a version of the website that is production ready. Remember to fix the express.js script following switching to build though.
+```bash
+sudo npm install -g pm2
+```
 
-# Self Hosting Stuff
+4. Install live-server globally so that the webpage will reload upon saving the project files.
 
-Keep in mind that it is possible that some of these commands are ran from the docker container and are not specified. I did my best to note it if they are, but I may have missed a few. The docker container is so locked down that trying the commands you are unsure about in the container first should give you a pretty good indication on if they are ran from the container or not.
+```bash
+sudo npm install -g live-server
+```
+
+5. You will need to edit the index.js file to point to the public folder while you develop, rather than the build folder. Simply change
+this line `app.use(express.static(path.join(__dirname, 'client/build')));` to this `app.use(express.static(path.join(__dirname, 'client/public')));` 
+
+6. Run index.js file with pm2
+
+```bash
+pm2 start index.js
+```
+
+7. Go to the client directory and start npm. You're finished!
+
+```bash
+cd client && npm start
+```
+
+
+
+# Information on Self Hosting a React/Node.js project
 
 First make sure you have NPM, nodejs, gcc, g++, make & curl installed. `sudo apt update`  `sudo apt install curl -y`  `curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -`  `sudo apt install gcc g++ make`  `sudo apt install -y nodejs` `sudo apt-get install yarn`
 
-It is also worth pointing out that you can install the current rather than the lts simply by replacing the string "*lts*" with "*current*".
+It is also worth pointing out that you can install the current rather than the lts simply by replacing the string "lts" with "*current*".
 
-You can initialize a new Node.js project with the command `npm init -y` which will create the package.json file with default values.
+You can initialize a new Node.js project with the command `npm init -y` which will create the package.json file with default values in the directory you are in.
 
-The Caddyfile entry for any Node.js website is very simply:
+The Caddyfile entry for any Node.js website is very simple:
 
 ```Caddy
 yourdomain.com {
@@ -33,48 +72,93 @@ yourdomain.com {
 }
 ```
 
-In order to use React with our Node.js project, we will install `npm install express` and after it completes, create your initial file, with a name matching the created package.json name given, ie index.js, and make it look something like this:
+In order to use React with our Node.js project, we will install express using
+
+```bash
+npm install express
+``` 
+
+and after it completes, create your initial file, with a name matching the created package.json name given, ie index.js, and make it look something like this:
 
 ```Javascript
 const express = require('express');
 const path = require('path');
 const app = express();
 const port = 8081;
-app.use(express.static(path.join(__dirname, 'client/public'))); // Serve static files from the "public" directory
+const connectToDb = require('./db.js');
+
+app.use(express.static(path.join(__dirname, 'client/build'))); // Serve static files from the "public" directory
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html'); // Serve the index.html file on the root path
 });
+
+// Test database connection
+connectToDb()
+  .then((db) => {
+    console.log('Connected to the database');
+  })
+  .catch((err) => {
+    console.error('Error connecting to the database:', err.stack);
+  });
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
 ```
 
-but with the correct information of course. Now you can run this with the command `node index.js` from the Docker Container. Following that, run the command `npm install -g create-react-app` from the host this time, if necessary, as if you have already installed this globally, theres no reason to run it again. After that we will create our react app with the command `create-react-app client` from the app directory.
+Make sure you are using the correct port that you are using with the Node container.
 
-Install pm2 with the command `npm install pm2 -g`. You can use this to start index.js instead of Node and that way it always runs in the background with the command `pm2 start index.js` and later on, `pm2 start db.js`. You can stop any service with `pm2 stop index`
-
-To ensure that PM2 automatically starts your Node.js application when the server is restarted, you can use the following command to generate a startup script: `pm2 startup`
-
-You may need to change the permissions of some of the folders for things like SSHing. You can use this command: `sudo chown -R gib:gib /path/to/project/directory`
-
-Now lets add a Database with Node.js. Run `npm install mysql2` and make a db.js file that looks a little bit like this:
+Add the db.js file & add your credentials for your database:
 
 ```Javascript
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 async function connectToDb() {
+  try {
     const connection = await mysql.createConnection({
-    
-        host: 'wwdb.gibbyb.com',
-        user: 'database-user',
-        password: 'database-password',
-        database: 'database-name',
+      host: '',
+      user: '',
+      password: '',
+      database: '',
     });
-
-    // Use the connection to query the database
+    return connection;
+  } catch (err) {
+    console.error('Error connecting to the database:', err.stack);
+    return null;
+  }
 }
-connectToDb();
+module.exports = connectToDb;
 ```
 
-Now run it either with pm2 `pm2 start db.js` or with Node, depending on what works best `node db.js`
+Install mysql2 with npm
 
-Now youre just about all set. Start the development server with the command **npm start** or build the project with the command **npm run build**
+```bash
+npm install mysql2
+```
+
+Now lets set up the React Environment. Lets install create-react-app globally
+
+```
+npm install -g create-react-app
+```
+
+now lets create the environment
+
+```
+create-react-app client
+```
+
+Now, from your Docker Container run 
+
+```
+node index.js
+```
+
+then change directories to client and run 
+
+```
+npm run build
+```
+
+Your website should now be live
