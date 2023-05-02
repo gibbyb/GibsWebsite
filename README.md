@@ -39,16 +39,22 @@ sudo npm install -g pm2
 sudo npm install -g live-server
 ```
 
-5. You will need to edit the index.js file to point to the public folder while you develop, rather than the build folder. Simply change
+5. From the root directory **and** the client directory, install the necessary node_modules
+
+```bash
+npm install
+```
+
+6. You will need to edit the index.js file to point to the public folder while you develop, rather than the build folder. Simply change
 this line `app.use(express.static(path.join(__dirname, 'client/build')));` to this `app.use(express.static(path.join(__dirname, 'client/public')));` 
 
-6. Run index.js file with pm2
+7. Run index.js file with pm2
 
 ```bash
 pm2 start index.js
 ```
 
-7. Go to the client directory and start npm. You're finished!
+8. Go to the client directory and start npm. You're finished!
 
 ```bash
 cd client && npm start
