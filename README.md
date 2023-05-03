@@ -74,11 +74,11 @@ The Caddyfile entry for any Node.js website is very simple:
 
 ```Caddy
 yourdomain.com {
-  reverse_proxy <node_container_ip>:<specified_port>
+  reverse_proxy <node_container_ip or node_container_hostname>:<specified_port>
 }
 ```
 
-In order to use React with our Node.js project, we will install express using
+In order to use React with our Node.js project, we will install express in the root directory of our project using
 
 ```bash
 npm install express
