@@ -27,16 +27,10 @@ async function connectToDb() {
 module.exports = connectToDb;
 ```
 
-3. Install pm2 globally in order to run index.js in the background.
+3. Install pm2 globally in order to run index.js in the background & install live-server globally so that the webpage will reload upon saving the project files.
 
 ```bash
-sudo npm install -g pm2
-```
-
-4. Install live-server globally so that the webpage will reload upon saving the project files.
-
-```bash
-sudo npm install -g live-server
+sudo npm install -g pm2 live-server
 ```
 
 5. From the root directory **and** the client directory, install the necessary node_modules
